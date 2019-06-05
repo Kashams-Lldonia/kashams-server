@@ -9,8 +9,8 @@ var Shamosa = require("./Database/modules/Shamosa.js");
 
 var multer = require("multer");
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 app.use(
   require("express-session")({
     key: "session",
@@ -20,7 +20,7 @@ app.use(
 );
 
 mongoose.connect(
-  "mongodb://admin:admin@ds163699.mlab.com:63699/kshamsdb",
+  "mongodb://admin:admin123@ds155164.mlab.com:55164/kshamsdb",
   () => {
     console.log("Database is connected.");
   }
@@ -29,35 +29,36 @@ mongoose.connect(
 var db = mongoose.connection;
 
 //Upload Image
-
 var storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(
-      null,
-      "/home/osamaths/Documents/Repos/kashams_lldonia/Back-End/uploads/"
-    );
+  destination: function(req, file, callback) {
+    callback(null, "./public/uploads");
   },
-  filename: function(req, file, cb) {
-    cb(null, file.fieldname + "-" + Date.now() + ".jpg");
+  filename: function(req, file, callback) {
+    callback(null, file.fieldname + "-" + Date.now());
   }
 });
+var upload = multer({ storage: storage }).single("photo");
 
-var upload = multer({ storage: storage, limits: { fileSize: 1000000 } }).single(
-  "NewsImage"
-);
 // Get
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/TemplatesHTML/welcome.html");
 });
 // newsImage
 
-app.post("/news/image", function(req, res) {
-  console.log("inside /uploads");
+app.post("/news/image", upload, function(req, res) {
+  console.log("Start uploading Post");
   console.log(req.file);
-  upload(req, res, function(err) {
-    if (err) res.send("ErrorImageUpload");
-    else res.send("Correct");
-  });
+  // var newNews = {
+  //   text: req.body._parts[1][1],
+  //   image: req.body._parts[0][1]
+  // };
+
+  // News.create(newNews, function(err, doc) {
+  //   if (err) return err;
+  //   else {
+  //     res.send(doc);
+  //   }
+  // });
 });
 
 //SignUp
