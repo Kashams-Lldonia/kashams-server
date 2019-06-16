@@ -1,5 +1,8 @@
 var express = require("express");
 var app = express();
+const session = require("express-session");
+
+var MongoStore = require("connect-mongo")(session);
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
 var User = require("./Database/modules/User.js");
@@ -12,15 +15,18 @@ var multer = require("multer");
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 app.use(
-  require("express-session")({
+  session({
     key: "session",
     secret: "SUPER SECRET SECRET",
-    store: require("mongoose-session")(mongoose)
+    store: new MongoStore({ mongooseConnection: mongoose.connection }),
+    resave: true,
+    saveUninitialized: true
   })
 );
 
 mongoose.connect(
-  "mongodb://admin:admin123@ds155164.mlab.com:55164/kshamsdb",
+  "mongodb+srv://admin:hskak_admin@kashamslldoina-fzb9m.mongodb.net/test?retryWrites=true&w=majority",
+  { useNewUrlParser: true },
   () => {
     console.log("Database is connected.");
   }
@@ -41,6 +47,8 @@ var upload = multer({ storage: storage }).single("photo");
 
 // Get
 app.get("/", (req, res) => {
+  console.log("helllo");
+
   res.sendFile(__dirname + "/TemplatesHTML/welcome.html");
 });
 // newsImage
@@ -66,11 +74,14 @@ app.post("/user/signup", (req, res) => {
   var newUser = {
     gender: req.body.gender,
     username: req.body.username,
+    firstname: req.body.firstname,
+    lastname: req.body.lastname,
     email: req.body.email,
     password: req.body.password,
+    major: req.body.major,
     currentAmiraId: req.body.currentAmiraId,
-    isAmira: req.body.isAmira,
-    isAdmin: req.body.isAdmin
+    userType: req.body.userType,
+    phone: req.body.phone
   };
   User.findOne({ username: newUser.username }, (err, user) => {
     if (!user) {
@@ -78,12 +89,23 @@ app.post("/user/signup", (req, res) => {
         if (err) {
           res.send({ message: err });
         }
-        res.send(true + doc);
+        console.log(user);
+        res.send(true);
       });
     } else {
       res.send({ message: "Username is already exist." });
     }
   });
+});
+var token = "k3658Xs";
+app.post("/user/tokenValidation", (req, res, next) => {
+  if (req.body.token === token) {
+    res.send({ status: true });
+  } else {
+    console.log("Checking Validation Token");
+    res.send({ status: false });
+    next();
+  }
 });
 
 //Login
@@ -93,7 +115,7 @@ app.post("/user/login", (req, res) => {
     if (user) {
       if (req.body.password === user.password) {
         req.session.userId = user._id;
-        res.send(true);
+        res.send({ status: true, user: user, token: "k3658Xs" });
       } else {
         res.send({ message: "Wrong password!" });
       }
@@ -113,10 +135,13 @@ app.get("/user/logout", checkSession, (req, res) => {
 
 // Check session
 function checkSession(req, res, next) {
+  console.log("Checking Session...");
+
   if (!req.session.userId) {
-    res.send({ message: "No access!" });
+    res.send({ message: "Access Denied!" });
+  } else {
+    next();
   }
-  next();
 }
 //addNews
 app.post("/news/add", checkSession, (req, res) => {
@@ -125,9 +150,10 @@ app.post("/news/add", checkSession, (req, res) => {
     image: req.body.image
   };
   News.create(newNews, function(err, doc) {
-    if (err) return err;
-    else {
+    if (doc) {
       res.send(doc);
+    } else {
+      res.send(err);
     }
   });
 });
@@ -140,21 +166,38 @@ app.post("/shamosa/add", checkSession, (req, res) => {
     like: req.body.like
   };
   Shamosa.create(newShamosa, function(err, doc) {
-    if (err) return err;
-    else {
+    if (doc) {
       res.send(doc);
+    } else {
+      res.send(err);
     }
   });
 });
+// get shamosa
+app.post("/get/shamosa/posts", checkSession, (req, res) => {
+  console.log("Getting Shamosa Posts");
 
+  Shamosa.find((err, docs) => {
+    if (err) return err;
+
+    var result = slicePosts(docs, req.body.end, req.body.amount, req.body.flag);
+    res.send(result);
+  });
+});
+function slicePosts(array, end, amount, flag) {
+  if (flag) {
+    end = array.length;
+  }
+  var start = end - amount;
+  return array.slice(start, end);
+}
 // Likes
 app.post("/shamosa/like", checkSession, (req, res) => {
-  var like = 0;
-  Shamosa.update({ _id: req.body._id }, { $set: { like: like + 1 } }, function(
+  Shamosa.updateOne({ _id: req.body._id }, { $inc: { like: 1 } }, function(
     err,
     doc
   ) {
-    if (err) return err;
+    if (err) res.send({ error: err });
     else {
       res.send(doc);
     }
@@ -251,22 +294,6 @@ app.post("/add/student/halqa", checkSession, (req, res) => {
     }
   );
 });
-// get shamosa
-app.post("/get/shamosa/posts", checkSession, (req, res) => {
-  Shamosa.find((err, docs) => {
-    if (err) return err;
-
-    var result = slicePosts(docs, req.body.end, req.body.amount, req.body.flag);
-    res.send(result);
-  });
-});
-function slicePosts(array, end, amount, flag) {
-  if (flag) {
-    end = array.length;
-  }
-  var start = end - amount;
-  return array.slice(start, end);
-}
 
 //The 404 Route (ALWAYS KEEP this as the last route)
 app.get("*", function(req, res) {
