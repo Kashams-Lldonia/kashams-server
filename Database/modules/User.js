@@ -12,7 +12,7 @@ var UserSchema = new Schema({
   userType: String,
   dob: Date,
   people: [String],
-  currentAmiraId: String
+  amiraId: String
 });
 
 module.exports = mongoose.model("User", UserSchema);
