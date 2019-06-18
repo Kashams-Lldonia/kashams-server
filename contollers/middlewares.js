@@ -1,7 +1,7 @@
 module.exports = {
   checkSession: (req, res, next) => {
-    console.log("Checking Session...");
-
+    console.log("Session has been paused.");
+    return;
     if (!req.session.userId) {
       res.send({ message: "Access Denied!" });
     } else {
