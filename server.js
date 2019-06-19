@@ -10,6 +10,7 @@ var multer = require("multer");
 const registrationRoutes = require("./routes/registration");
 const amiraRouter = require("./routes/amira");
 const halqaRouter = require("./routes/halqa");
+const miniHalqaRouter = require("./routes/miniHalqa");
 const shamosaRouter = require("./routes/shamosa");
 const newsRouter = require("./routes/news");
 
@@ -55,6 +56,7 @@ app.get("/", (req, res) => {
 app.use("/user", registrationRoutes);
 app.use("/amira", amiraRouter);
 app.use("/halqa", halqaRouter);
+app.use("/halqa/mini", miniHalqaRouter);
 app.use("/shamosa", shamosaRouter);
 app.use("/news", newsRouter);
 

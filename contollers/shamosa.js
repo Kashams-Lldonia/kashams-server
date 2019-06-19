@@ -18,7 +18,7 @@ module.exports = {
     var newShamosa = {
       text: req.body.text,
       image: req.body.image,
-      like: req.body.like
+      username: req.body.username
     };
     Shamosa.create(newShamosa, function(err, doc) {
       if (doc) {
