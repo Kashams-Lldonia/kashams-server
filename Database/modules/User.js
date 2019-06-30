@@ -12,8 +12,14 @@ var UserSchema = new Schema({
   phone: Number,
   userType: String,
   dob: Date,
+  amiraId: String,
   people: [String],
-  amiraId: String
+  posts: [
+    {
+      ref: "Shamosa",
+      type: mongoose.Schema.Types.ObjectId
+    }
+  ]
 });
 
 module.exports = mongoose.model("User", UserSchema);

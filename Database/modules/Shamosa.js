@@ -9,7 +9,12 @@ var ShamosaSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User"
   },
-  like: Number
+  like: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    }
+  ]
 });
 
 module.exports = mongoose.model("Shamosa", ShamosaSchema);

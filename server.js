@@ -28,7 +28,7 @@ app.use(
 
 mongoose.connect(
   "mongodb+srv://admin:hskak_admin@kashamslldoina-fzb9m.mongodb.net/test?retryWrites=true&w=majority",
-  { useNewUrlParser: true },
+  { useNewUrlParser: true, useFindAndModify: false },
   () => {
     console.log("Database is connected.");
   }

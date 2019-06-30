@@ -1,16 +1,40 @@
 const Shamosa = require("../Database/modules/Shamosa.js");
+const User = require("../Database/modules/User");
 const { getPosts } = require("../contollers/helpers");
 
-const _updateLike = (req, res, value) => {
-  Shamosa.updateOne({ _id: req.body._id }, { $inc: { like: value } }, function(
-    err,
-    doc
-  ) {
-    if (err) res.send({ error: err });
-    else {
-      res.send(doc);
-    }
-  });
+const _addLike = async (req, res) => {
+  try {
+    var user = await User.findOne({ _id: req.body.userID }).exec();
+    var shamosa = await Shamosa.findOne({ _id: req.body._id }).exec();
+
+    shamosa.like.push(user);
+    user.posts.push(shamosa);
+
+    shamosa.save();
+    user.save();
+
+    res.send({ status: true });
+  } catch (err) {
+    res.send({ error: err });
+  }
+};
+
+// dislike
+const _deleteLike = async (req, res) => {
+  try {
+    var user = await User.findOne({ _id: req.body.userID }).exec();
+    var shamosa = await Shamosa.findOne({ _id: req.body._id }).exec();
+
+    shamosa.like.pull({ _id: req.body.userID });
+    user.posts.pull({ _id: req.body._id });
+
+    shamosa.save();
+    user.save();
+
+    res.send({ status: true });
+  } catch (err) {
+    res.send({ error: err });
+  }
 };
 
 module.exports = {
@@ -32,9 +56,9 @@ module.exports = {
     getPosts(req, res, Shamosa);
   },
   like: (req, res) => {
-    _updateLike(req, res, 1);
+    _addLike(req, res);
   },
   disLike: (req, res) => {
-    _updateLike(req, res, -1);
+    _deleteLike(req, res);
   }
 };
