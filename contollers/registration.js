@@ -3,23 +3,27 @@ const token = "k3658Xs";
 
 module.exports = {
   login: (req, res) => {
-    console.log("loging in...", req.body);
-    User.findOne({ username: req.body.username }, (err, user) => {
-      console.log(user);
+    console.log("logging in...", req.body);
+    try {
+      User.findOne({ username: req.body.username }, (err, user) => {
+        console.log(user);
 
-      if (user) {
-        if (req.body.password === user.password) {
-          req.session.userId = user._id;
-          res.send({ status: true, user: user, token: "k3658Xs" });
+        if (user) {
+          if (req.body.password === user.password) {
+            req.session.userId = user._id;
+            res.send({ status: true, user: user, token: "k3658Xs" });
+          } else {
+            res.send({ message: "Wrong password!" });
+          }
         } else {
-          res.send({ message: "Wrong password!" });
+          res.send({
+            message: "Username '" + req.body.username + "' Not Found."
+          });
         }
-      } else {
-        res.send({
-          message: "Username '" + req.body.username + "' Not Found."
-        });
-      }
-    });
+      });
+    } catch (error) {
+      console.log(error);
+    }
   },
   signup: (req, res) => {
     var newUser = {
