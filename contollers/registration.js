@@ -5,6 +5,8 @@ module.exports = {
   login: (req, res) => {
     console.log("loging in...", req.body);
     User.findOne({ username: req.body.username }, (err, user) => {
+      console.log(user);
+
       if (user) {
         if (req.body.password === user.password) {
           req.session.userId = user._id;

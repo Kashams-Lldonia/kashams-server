@@ -27,7 +27,7 @@ app.use(
 );
 
 mongoose.connect(
-  "mongodb+srv://admin:hskak_admin@kashamslldoina-fzb9m.mongodb.net/test?retryWrites=true&w=majority",
+  "mongodb+srv://admin:SOO4e0psFD8pP34Y@kashamslldoina-fzb9m.mongodb.net/test?retryWrites=true&w=majority",
   { useNewUrlParser: true, useFindAndModify: false },
   () => {
     console.log("Database is connected.");
