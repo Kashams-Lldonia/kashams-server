@@ -5,7 +5,6 @@ const halqaCtrl = require("../contollers/halqa");
 
 router
   .post("/add", checkSession, halqaCtrl.add)
-  .post("/get", checkSession, halqaCtrl.get)
-  .post("/add-student", checkSession, halqaCtrl.addStudent);
+  .post("/get", checkSession, halqaCtrl.get);
 
 module.exports = router;

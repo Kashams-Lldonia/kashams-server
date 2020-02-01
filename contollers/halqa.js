@@ -5,9 +5,8 @@ module.exports = {
   add: (req, res) => {
     var newHalqa = {
       name: req.body.name,
-      teacher: req.body.teacher,
-      time: req.body.time,
-      place: req.body.place
+      description: req.body.description,
+      image: req.body.image
     };
     Halqa.create(newHalqa, function(err, doc) {
       if (err) return err;
@@ -17,6 +16,8 @@ module.exports = {
     });
   },
   get: (req, res) => {
+    console.log("Getting Halqat...");
+
     getPosts(req, res, Halqa);
   },
   addStudent: (req, res) => {
