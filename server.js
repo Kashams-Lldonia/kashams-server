@@ -25,12 +25,11 @@ app.use(
     saveUninitialized: true
   })
 );
-
 mongoose.connect(
-  "mongodb+srv://admin:SOO4e0psFD8pP34Y@kashamslldoina-fzb9m.mongodb.net/test?retryWrites=true&w=majority",
-  { useNewUrlParser: true, useFindAndModify: false },
-  () => {
-    console.log("Database is connected.");
+  "mongodb://admin:yiGpK77sVTbcEIEN@development-shard-00-00-6crih.mongodb.net:27017,development-shard-00-01-6crih.mongodb.net:27017,development-shard-00-02-6crih.mongodb.net:27017/test?ssl=true&replicaSet=development-shard-0&authSource=admin&retryWrites=true&w=majority",
+  { useNewUrlParser: true },
+  err => {
+    console.log("Database is connected.", err);
   }
 );
 

@@ -1,13 +1,11 @@
-const User = require("../Database/modules/User.js");
+const Users = require("../Database/modules/User.js");
 const token = "k3658Xs";
 
 module.exports = {
-  login: (req, res) => {
-    console.log("logging in...", req.body);
+  login: async (req, res) => {
     try {
-      User.findOne({ username: req.body.username }, (err, user) => {
-        console.log(user);
-
+      const users = await Users.find();
+      Users.findOne({ username: req.body.username }, (err, user) => {
         if (user) {
           if (req.body.password === user.password) {
             req.session.userId = user._id;
@@ -38,13 +36,12 @@ module.exports = {
       userType: req.body.userType,
       phone: req.body.phone
     };
-    User.findOne({ username: newUser.username }, (err, user) => {
+    Users.findOne({ username: newUser.username }, (err, user) => {
       if (!user) {
-        User.create(newUser, (err, doc) => {
+        Users.create(newUser, (err, doc) => {
           if (err) {
-            res.send({ message: err });
+            return res.send({ message: err });
           }
-
           res.send({ message: true });
         });
       } else {
