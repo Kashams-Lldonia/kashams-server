@@ -5,7 +5,8 @@ module.exports = {
   add: (req, res) => {
     var newNews = {
       text: req.body.text,
-      image: req.body.image
+      image: req.body.image,
+      time: req.body.time
     };
     News.create(newNews, function(err, doc) {
       if (doc) {

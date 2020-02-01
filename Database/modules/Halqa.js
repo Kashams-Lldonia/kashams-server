@@ -1,12 +1,16 @@
-var mongoose = require('mongoose');
+var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
 var HalqaSchema = new Schema({
   name: String,
-  teacher: String,
-  students:[String],
-  time:String,
-  place: String
-  });
+  description: String,
+  image: String,
+  miniHalqat: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "MiniHalqa"
+    }
+  ]
+});
 
-module.exports = mongoose.model('Halqa', HalqaSchema);
+module.exports = mongoose.model("Halqa", HalqaSchema);
